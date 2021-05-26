@@ -150,8 +150,14 @@ namespace TextEditor {
         }
 
         private void UndoBtn_OnClick(object sender, RoutedEventArgs e) {
-	        if (RtbEditor.IsUndoEnabled) {
+	        if (RtbEditor.CanUndo) {
 		        RtbEditor.Undo();
+	        }
+        }
+
+        private void RedoBtn_OnClick(object sender, RoutedEventArgs e) {
+	        if (RtbEditor.CanRedo) {
+		        RtbEditor.Redo();
 	        }
         }
     }

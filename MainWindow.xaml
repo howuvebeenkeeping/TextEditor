@@ -34,6 +34,7 @@
             <ComboBox x:Name="CmbFontSize" Width="50" SelectionChanged="CmbFontSize_OnSelectionChanged"/>
             <xctk:ColorPicker Width="50" Height="25" Name="ColorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
             <Button x:Name="UndoBtn" Click="UndoBtn_OnClick" Content="Undo"/>
+            <Button x:Name="RedoBtn" Click="RedoBtn_OnClick" Content="Redo"/>
         </ToolBar>
         <RichTextBox x:Name="RtbEditor" SelectionChanged="RtbEditor_SelectionChanged"/>
     </DockPanel>
