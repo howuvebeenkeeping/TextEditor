@@ -30,8 +30,9 @@
             </ToggleButton>
             <Separator />
             <ComboBox x:Name="CmbFontFamily" Width="150" SelectionChanged="CmbFontFamily_SelectionChanged"/>
-            <ComboBox x:Name="CmbFontSize" Width="50" IsEditable="False" TextBoxBase.TextChanged="CmbFontSize_TextChanged" />
+            <ComboBox x:Name="CmbFontSize" Width="50" SelectionChanged="CmbFontSize_OnSelectionChanged"/>
             <xctk:ColorPicker Width="50" Height="25" Name="ColorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
+            <Button x:Name="UndoBtn" Click="UndoBtn_OnClick" Content="Undo"/>
         </ToolBar>
         <RichTextBox x:Name="RtbEditor" SelectionChanged="RtbEditor_SelectionChanged"/>
     </DockPanel>
