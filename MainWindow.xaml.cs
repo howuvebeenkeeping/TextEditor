@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -78,18 +79,21 @@ namespace TextEditor {
 							colorBrush.Color.B);
 					}
 					
-					var fontFamily = textRange.GetPropertyValue(TextElement.FontFamilyProperty);
+					// font family check
+					object fontFamily = textRange.GetPropertyValue(TextElement.FontFamilyProperty);
 					if (fontFamily != null) {
 						CmbFontFamily.SelectedItem = fontFamily;
 					}
-					var fontSize = textRange.GetPropertyValue(TextElement.FontSizeProperty);
+					
+					// font size check
+					object fontSize = textRange.GetPropertyValue(TextElement.FontSizeProperty);
 					if (fontSize != null) {
 						CmbFontSize.Text = fontSize.ToString();
 					}
 				}
 				
 			} catch (Exception ex) {
-				MessageBox.Show(ex.Message);
+				Debug.WriteLine(ex.Message);
 			}
 
 			RtbEditor.Focus();
