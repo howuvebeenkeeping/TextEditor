@@ -11,22 +11,18 @@ namespace TextEditor {
         private static TextRange TextRange => new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd); 
 
         public static void Save() {
-            var fileDialog = new SaveFileDialog {
-                Filter = DocumentFilter
-            };
+            var saveDialog = new SaveFileDialog {Filter = DocumentFilter};
 
-            if (fileDialog.ShowDialog() == true) {
-                TextRange.Save(new FileStream(fileDialog.FileName, FileMode.Create), DataFormats.Rtf);
+            if (saveDialog.ShowDialog() == true) {
+                TextRange.Save(new FileStream(saveDialog.FileName, FileMode.Create), DataFormats.Rtf);
             }
         }
 
         public static void Open() {
-            var fileDialog = new OpenFileDialog {
-                Filter = DocumentFilter
-            };
+            var openDialog = new OpenFileDialog {Filter = DocumentFilter};
 			
-            if (fileDialog.ShowDialog() == true) {
-                TextRange.Load(new FileStream(fileDialog.FileName, FileMode.Open), DataFormats.Rtf);
+            if (openDialog.ShowDialog() == true) {
+                TextRange.Load(new FileStream(openDialog.FileName, FileMode.Open), DataFormats.Rtf);
             }
         }
     }

@@ -43,12 +43,11 @@ namespace TextEditor {
         }
 
 		private bool CheckToggleButton(object fontStyleOrWeight) {
-			if (fontStyleOrWeight is FontWeight fontWeight) {
-				return fontStyleOrWeight != DependencyProperty.UnsetValue && fontWeight.Equals(FontWeights.Bold);
-            }
-
-			if (fontStyleOrWeight is FontStyle fontStyle) {
-				return fontStyleOrWeight != DependencyProperty.UnsetValue && fontStyle.Equals(FontStyles.Italic);
+			switch (fontStyleOrWeight) {
+				case FontWeight fontWeight:
+					return fontStyleOrWeight != DependencyProperty.UnsetValue && fontWeight.Equals(FontWeights.Bold);
+				case FontStyle fontStyle:
+					return fontStyleOrWeight != DependencyProperty.UnsetValue && fontStyle.Equals(FontStyles.Italic);
 			}
 
 			TextPointer caret = RtbEditor.CaretPosition;
@@ -82,21 +81,19 @@ namespace TextEditor {
 				// object textDecoration = textRange.GetPropertyValue(Inline.TextDecorationsProperty);
 				// BtnUnderline.IsChecked = textDecoration != DependencyProperty.UnsetValue && textDecoration.Equals(TextDecorations.Underline);
 
-				if (!textRange.IsEmpty) {
-					// check color pick
-					if (_textFormatter.FontColor is SolidColorBrush colorBrush) {
-						ColorPicker.SelectedColor = Color.FromArgb(
-							colorBrush.Color.A,
-							colorBrush.Color.R,
-							colorBrush.Color.G,
-							colorBrush.Color.B);
-					}
-					
-					// font family check
-					CmbFontFamily.SelectedItem = _textFormatter.FontFamily ?? CmbFontFamily.SelectedItem;
-					// font size check
-					CmbFontSize.Text = _textFormatter.FontSize?.ToString() ?? CmbFontSize.Text;
+				// check color pick
+				if (_textFormatter.FontColor is SolidColorBrush colorBrush) {
+					ColorPicker.SelectedColor = Color.FromArgb(
+						colorBrush.Color.A,
+						colorBrush.Color.R,
+						colorBrush.Color.G,
+						colorBrush.Color.B);
 				}
+
+				// font family check
+				CmbFontFamily.SelectedItem = _textFormatter.FontFamily ?? CmbFontFamily.SelectedItem;
+				// font size check
+				CmbFontSize.Text = _textFormatter.FontSize?.ToString() ?? CmbFontSize.Text;
 				
 			} catch (Exception ex) {
 				Debug.WriteLine(ex.Message);
