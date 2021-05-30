@@ -10,7 +10,7 @@ using System.Windows.Media;
 namespace TextEditor {
     public class TextFormatter {
         private readonly RichTextBox _richTextBox;
-        public TextRange TextRange => new TextRange(_richTextBox.Selection.Start, _richTextBox.Selection.End);
+        private TextRange TextRange => new TextRange(_richTextBox.Selection.Start, _richTextBox.Selection.End);
         public object FontWeight => TextRange.GetPropertyValue(TextElement.FontWeightProperty);
         public object FontStyle => TextRange.GetPropertyValue(TextElement.FontStyleProperty);
         public object FontColor {
@@ -28,7 +28,7 @@ namespace TextEditor {
         }
 
         public TextFormatter(RichTextBox richTextBox) {
-            this._richTextBox = richTextBox;
+            _richTextBox = richTextBox;
         }
 
     }

@@ -67,8 +67,6 @@ namespace TextEditor {
 
 		private void RtbEditor_SelectionChanged(object sender, RoutedEventArgs e) {
 			try {
-				var textRange = _textFormatter.TextRange;
-
 				// check weight button
 				BtnBold.IsChecked = CheckToggleButton(_textFormatter.FontWeight);  
 
