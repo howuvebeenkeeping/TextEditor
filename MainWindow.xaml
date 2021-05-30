@@ -19,6 +19,8 @@
             <Button Command="ApplicationCommands.Save">
                 <Image Source="pack://application:,,,/Assets/disk.png" Width="25" Height="25" />
             </Button>
+            <Button x:Name="UndoBtn" Click="UndoBtn_OnClick" Content="Undo"/>
+            <Button x:Name="RedoBtn" Click="RedoBtn_OnClick" Content="Redo"/>
             <Separator />
             <ToggleButton Command="EditingCommands.ToggleBold" x:Name="BtnBold">
                 <Image Source="pack://application:,,,/Assets/text_bold.png" Width="25" Height="24" />
@@ -33,8 +35,7 @@
             <ComboBox x:Name="CmbFontFamily" Width="150" SelectionChanged="CmbFontFamily_SelectionChanged"/>
             <ComboBox x:Name="CmbFontSize" Width="50" SelectionChanged="CmbFontSize_OnSelectionChanged"/>
             <xctk:ColorPicker Width="50" Height="25" Name="ColorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
-            <Button x:Name="UndoBtn" Click="UndoBtn_OnClick" Content="Undo"/>
-            <Button x:Name="RedoBtn" Click="RedoBtn_OnClick" Content="Redo"/>
+           
         </ToolBar>
         <RichTextBox x:Name="RtbEditor" SelectionChanged="RtbEditor_SelectionChanged"/>
     </DockPanel>

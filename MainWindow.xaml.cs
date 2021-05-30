@@ -21,57 +21,70 @@ namespace TextEditor {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-		private readonly bool _defaultColorSet;
-		private readonly bool _defaultFontSizeSet;
+		private readonly TextFormatter _textFormatter;
 		
         public MainWindow() {
             InitializeComponent();
+			_textFormatter = new TextFormatter(RtbEditor);
             CmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
 			CmbFontSize.ItemsSource = new List<double> { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 
+			// setting defaults
 			// Times New Roman
 			CmbFontFamily.SelectedIndex = 185;
-			// 16
-			CmbFontSize.SelectedIndex = 6;     
-
-			RtbEditor.FontSize = 16;
 			RtbEditor.FontFamily = new FontFamily("Times New Roman");
-
+			// 16
+			CmbFontSize.SelectedIndex = 6;
+			RtbEditor.FontSize = 16;
+			// black text
 			ColorPicker.SelectedColor = Colors.Black;
-			_defaultColorSet = true;
-			_defaultFontSizeSet = true;
+
+			DataStorage.RichTextBox = RtbEditor;
         }
+
+		private bool CheckToggleButton(object fontStyleOrWeight) {
+			if (fontStyleOrWeight is FontWeight fontWeight) {
+				return fontStyleOrWeight != DependencyProperty.UnsetValue && fontWeight.Equals(FontWeights.Bold);
+            }
+
+			if (fontStyleOrWeight is FontStyle fontStyle) {
+				return fontStyleOrWeight != DependencyProperty.UnsetValue && fontStyle.Equals(FontStyles.Italic);
+			}
+
+			TextPointer caret = RtbEditor.CaretPosition;
+			var paragraph = RtbEditor.Document.Blocks.FirstOrDefault(x =>
+				x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) as Paragraph;
+
+			if (paragraph?.Inlines.FirstOrDefault(x =>
+				x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) is Inline inline)
+			{
+				TextDecorationCollection decorations = inline.TextDecorations;
+				return decorations != DependencyProperty.UnsetValue && decorations != null &&
+				       decorations.Contains(TextDecorations.Underline[0]);
+			}
+			return false;
+		}
+
 
 		private void RtbEditor_SelectionChanged(object sender, RoutedEventArgs e) {
 			try {
-				var textRange = new TextRange(RtbEditor.Selection.Start, RtbEditor.Selection.End);
-				
+				var textRange = _textFormatter.TextRange;
+
 				// check weight button
-				object fontWeight = textRange.GetPropertyValue(TextElement.FontWeightProperty);
-				BtnBold.IsChecked = fontWeight != DependencyProperty.UnsetValue && fontWeight.Equals(FontWeights.Bold);
+				BtnBold.IsChecked = CheckToggleButton(_textFormatter.FontWeight);  
 
 				// check italic button
-				object fontStyle = textRange.GetPropertyValue(TextElement.FontStyleProperty);
-				BtnItalic.IsChecked = fontStyle != DependencyProperty.UnsetValue && fontStyle.Equals(FontStyles.Italic);
+				BtnItalic.IsChecked = CheckToggleButton(_textFormatter.FontStyle);
 
 				// check underline button
-				TextPointer caret = RtbEditor.CaretPosition;
-				var paragraph = RtbEditor.Document.Blocks.FirstOrDefault(x =>
-					x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) as Paragraph;
-				
-				if (paragraph?.Inlines.FirstOrDefault(x =>
-					x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) is Inline inline) {
-					TextDecorationCollection decorations = inline.TextDecorations;
-					BtnUnderline.IsChecked = decorations != DependencyProperty.UnsetValue && decorations != null &&
-					                         decorations.Contains(TextDecorations.Underline[0]);
-				}
-				
+				BtnUnderline.IsChecked = CheckToggleButton(null);
+
 				// object textDecoration = textRange.GetPropertyValue(Inline.TextDecorationsProperty);
 				// BtnUnderline.IsChecked = textDecoration != DependencyProperty.UnsetValue && textDecoration.Equals(TextDecorations.Underline);
-				
+
 				if (!textRange.IsEmpty) {
 					// check color pick
-					if (textRange.GetPropertyValue(TextElement.ForegroundProperty) is SolidColorBrush colorBrush) {
+					if (_textFormatter.FontColor is SolidColorBrush colorBrush) {
 						ColorPicker.SelectedColor = Color.FromArgb(
 							colorBrush.Color.A,
 							colorBrush.Color.R,
@@ -80,16 +93,9 @@ namespace TextEditor {
 					}
 					
 					// font family check
-					object fontFamily = textRange.GetPropertyValue(TextElement.FontFamilyProperty);
-					if (fontFamily != null) {
-						CmbFontFamily.SelectedItem = fontFamily;
-					}
-					
+					CmbFontFamily.SelectedItem = _textFormatter.FontFamily ?? CmbFontFamily.SelectedItem;
 					// font size check
-					object fontSize = textRange.GetPropertyValue(TextElement.FontSizeProperty);
-					if (fontSize != null) {
-						CmbFontSize.Text = fontSize.ToString();
-					}
+					CmbFontSize.Text = _textFormatter.FontSize?.ToString() ?? CmbFontSize.Text;
 				}
 				
 			} catch (Exception ex) {
@@ -100,51 +106,30 @@ namespace TextEditor {
 		}
 
 		private void Open_Executed(object sender, ExecutedRoutedEventArgs e) {
-			var fileDialog = new OpenFileDialog {
-				Filter = "Rich Text Format (*.rtf)|*.rtf|All files (*.*)|*.*"
-			};
-			
-			if (fileDialog.ShowDialog() == true) {
-				var fileStream = new FileStream(fileDialog.FileName, FileMode.Open);
-				var textRange = new TextRange(RtbEditor.Document.ContentStart, RtbEditor.Document.ContentEnd);
-				textRange.Load(fileStream, DataFormats.Rtf);
-			}
+			DataStorage.Open();
 		}
 
 		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) {
-            var fileDialog = new SaveFileDialog {
-                Filter = "Rich Text Format (*.rtf)|*.rtf|All files (*.*)|*.*"
-            };
-
-            if (fileDialog.ShowDialog() == true) {
-				var fileStream = new FileStream(fileDialog.FileName, FileMode.Create);
-				var textRange = new TextRange(RtbEditor.Document.ContentStart, RtbEditor.Document.ContentEnd);
-				textRange.Save(fileStream, DataFormats.Rtf);
-			}
+            DataStorage.Save();
 		}
 
 		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 			if (CmbFontFamily.SelectedItem != null) {
-				RtbEditor.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, CmbFontFamily.SelectedValue);
+				_textFormatter.FontFamily = CmbFontFamily.SelectedValue;
+				RtbEditor.Focus();
 			}
-
-			RtbEditor.Focus();
 		}
 
 		private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e) {
-			if (_defaultColorSet) {
-				if (ColorPicker.SelectedColor != null) {
-					RtbEditor.Selection.ApplyPropertyValue(TextElement.ForegroundProperty,
-						new SolidColorBrush((Color) ColorPicker.SelectedColor));
-				}
+			if (_textFormatter.FontColor != null && ColorPicker.SelectedColor != null) {
+				_textFormatter.FontColor = ColorPicker.SelectedColor;
+				RtbEditor.Focus();
 			}
 		}
 
         private void CmbFontSize_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-	        if (_defaultFontSizeSet) {
-		        var textRange = new TextRange(RtbEditor.Selection.Start, RtbEditor.Selection.End);
-		        textRange.ApplyPropertyValue(TextElement.FontSizeProperty, CmbFontSize.SelectedItem);
-		        
+	        if (_textFormatter.FontSize != null && CmbFontSize.SelectedItem != null) {
+				_textFormatter.FontSize = CmbFontSize.SelectedItem;
 		        RtbEditor.Focus();
 	        }
         }
