@@ -13,12 +13,14 @@ namespace TextEditor
     public partial class MainWindow : Window 
 	{
 		private readonly TextFormatter _textFormatter;
+		private readonly DataStorage _dataStorage;
 		
         public MainWindow() 
 		{
             InitializeComponent();
 			
 			_textFormatter = new TextFormatter(RichTextBox);
+			_dataStorage = new DataStorage(RichTextBox);
             CmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
 			CmbFontSize.ItemsSource = new List<double> { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 
@@ -66,9 +68,6 @@ namespace TextEditor
 				BtnItalic.IsChecked = CheckFontDecoration(_textFormatter.FontStyle);
 				BtnUnderline.IsChecked = CheckUnderline();
 
-				// object textDecoration = textRange.GetPropertyValue(Inline.TextDecorationsProperty);
-				// BtnUnderline.IsChecked = textDecoration != DependencyProperty.UnsetValue && textDecoration.Equals(TextDecorations.Underline);
-
 				// check color pick
 				if (_textFormatter.FontColor is SolidColorBrush colorBrush) 
 				{
@@ -98,12 +97,12 @@ namespace TextEditor
 
 		private void Open_Executed(object sender, ExecutedRoutedEventArgs e) 
 		{
-			DataStorage.Open(new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd));
+			_dataStorage.Open();
 		}
 
 		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) 
 		{
-            DataStorage.Save(new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd));
+			_dataStorage.Save();
 		}
 
 		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)

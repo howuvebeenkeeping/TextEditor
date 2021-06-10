@@ -4,12 +4,13 @@ using System.Windows.Media;
 
 namespace TextEditor 
 {
-    public class TextFormatter 
+    internal class TextFormatter 
     {
         private readonly RichTextBox _richTextBox;
         private TextRange TextRange => new TextRange(_richTextBox.Selection.Start, _richTextBox.Selection.End);
         public object FontWeight => TextRange.GetPropertyValue(TextElement.FontWeightProperty);
         public object FontStyle => TextRange.GetPropertyValue(TextElement.FontStyleProperty);
+        
         public object FontColor
         {
             get => TextRange.GetPropertyValue(TextElement.ForegroundProperty);
@@ -21,6 +22,7 @@ namespace TextEditor
             get => TextRange.GetPropertyValue(TextElement.FontSizeProperty);
             set => TextRange.ApplyPropertyValue(TextElement.FontSizeProperty, value);
         }
+        
         public object FontFamily
         { 
             get => TextRange.GetPropertyValue(TextElement.FontFamilyProperty);
