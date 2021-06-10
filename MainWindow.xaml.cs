@@ -16,42 +16,46 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TextEditor {
+namespace TextEditor
+{
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window 
+	{
 		private readonly TextFormatter _textFormatter;
 		
-        public MainWindow() {
+        public MainWindow() 
+		{
             InitializeComponent();
-			_textFormatter = new TextFormatter(RtbEditor);
+			
+			_textFormatter = new TextFormatter(RichTextBox);
             CmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
 			CmbFontSize.ItemsSource = new List<double> { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 
 			// setting defaults
-			// Times New Roman
-			CmbFontFamily.SelectedIndex = 185;
-			RtbEditor.FontFamily = new FontFamily("Times New Roman");
-			// 16
-			CmbFontSize.SelectedIndex = 6;
-			RtbEditor.FontSize = 16;
-			// black text
+			RichTextBox.FontFamily = new FontFamily("Times New Roman");
+			RichTextBox.FontSize = 16;
 			ColorPicker.SelectedColor = Colors.Black;
-
-			DataStorage.RichTextBox = RtbEditor;
         }
 
-		private bool CheckToggleButton(object fontStyleOrWeight) {
-			switch (fontStyleOrWeight) {
+		private bool CheckFontDecoration(object fontDecoration) 
+		{
+			switch (fontDecoration) 
+			{
 				case FontWeight fontWeight:
-					return fontStyleOrWeight != DependencyProperty.UnsetValue && fontWeight.Equals(FontWeights.Bold);
+					return fontDecoration != DependencyProperty.UnsetValue && fontWeight.Equals(FontWeights.Bold);
 				case FontStyle fontStyle:
-					return fontStyleOrWeight != DependencyProperty.UnsetValue && fontStyle.Equals(FontStyles.Italic);
+					return fontDecoration != DependencyProperty.UnsetValue && fontStyle.Equals(FontStyles.Italic);
 			}
 
-			TextPointer caret = RtbEditor.CaretPosition;
-			var paragraph = RtbEditor.Document.Blocks.FirstOrDefault(x =>
+			return false;
+		}
+		
+		private bool CheckUnderline()
+        {
+			TextPointer caret = RichTextBox.CaretPosition;
+			var paragraph = RichTextBox.Document.Blocks.FirstOrDefault(x =>
 				x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) as Paragraph;
 
 			if (paragraph?.Inlines.FirstOrDefault(x =>
@@ -59,28 +63,26 @@ namespace TextEditor {
 			{
 				TextDecorationCollection decorations = inline.TextDecorations;
 				return decorations != DependencyProperty.UnsetValue && decorations != null &&
-				       decorations.Contains(TextDecorations.Underline[0]);
+					   decorations.Contains(TextDecorations.Underline[0]);
 			}
+
 			return false;
 		}
 
-
-		private void RtbEditor_SelectionChanged(object sender, RoutedEventArgs e) {
-			try {
-				// check weight button
-				BtnBold.IsChecked = CheckToggleButton(_textFormatter.FontWeight);  
-
-				// check italic button
-				BtnItalic.IsChecked = CheckToggleButton(_textFormatter.FontStyle);
-
-				// check underline button
-				BtnUnderline.IsChecked = CheckToggleButton(null);
+		private void RichTextBox_SelectionChanged(object sender, RoutedEventArgs e) 
+		{
+			try 
+			{
+				BtnBold.IsChecked = CheckFontDecoration(_textFormatter.FontWeight);  
+				BtnItalic.IsChecked = CheckFontDecoration(_textFormatter.FontStyle);
+				BtnUnderline.IsChecked = CheckUnderline();
 
 				// object textDecoration = textRange.GetPropertyValue(Inline.TextDecorationsProperty);
 				// BtnUnderline.IsChecked = textDecoration != DependencyProperty.UnsetValue && textDecoration.Equals(TextDecorations.Underline);
 
 				// check color pick
-				if (_textFormatter.FontColor is SolidColorBrush colorBrush) {
+				if (_textFormatter.FontColor is SolidColorBrush colorBrush) 
+				{
 					ColorPicker.SelectedColor = Color.FromArgb(
 						colorBrush.Color.A,
 						colorBrush.Color.R,
@@ -93,52 +95,67 @@ namespace TextEditor {
 				// font size check
 				CmbFontSize.Text = _textFormatter.FontSize?.ToString() ?? CmbFontSize.Text;
 				
-			} catch (Exception ex) {
+				// undo/redo button activation
+				UndoBtn.IsEnabled = RichTextBox.CanUndo;
+				RedoBtn.IsEnabled = RichTextBox.CanRedo;
+			} 
+			catch (Exception ex) 
+			{
 				Debug.WriteLine(ex.Message);
 			}
 
-			RtbEditor.Focus();
+			RichTextBox.Focus();
 		}
 
-		private void Open_Executed(object sender, ExecutedRoutedEventArgs e) {
-			DataStorage.Open();
+		private void Open_Executed(object sender, ExecutedRoutedEventArgs e) 
+		{
+			DataStorage.Open(new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd));
 		}
 
-		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) {
-            DataStorage.Save();
+		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) 
+		{
+            DataStorage.Save(new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd));
 		}
 
-		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-			if (CmbFontFamily.SelectedItem != null) {
+		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (CmbFontFamily.SelectedItem != null) 
+			{
 				_textFormatter.FontFamily = CmbFontFamily.SelectedValue;
-				RtbEditor.Focus();
+				RichTextBox.Focus();
 			}
 		}
 
-		private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e) {
-			if (_textFormatter.FontColor != null && ColorPicker.SelectedColor != null) {
+		private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e) 
+		{
+			if (_textFormatter.FontColor != null && ColorPicker.SelectedColor != null) 
+			{
 				_textFormatter.FontColor = ColorPicker.SelectedColor;
-				RtbEditor.Focus();
+				RichTextBox.Focus();
 			}
 		}
 
-        private void CmbFontSize_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-	        if (_textFormatter.FontSize != null && CmbFontSize.SelectedItem != null) {
+		private void CmbFontSize_OnSelectionChanged(object sender, SelectionChangedEventArgs e) 
+		{
+			if (_textFormatter.FontSize != null && CmbFontSize.SelectedItem != null) 
+			{
 				_textFormatter.FontSize = CmbFontSize.SelectedItem;
-		        RtbEditor.Focus();
-	        }
-        }
+				RichTextBox.Focus();
+			}
+		}
 
-        private void UndoBtn_OnClick(object sender, RoutedEventArgs e) {
-	        if (RtbEditor.CanUndo) {
-		        RtbEditor.Undo();
-	        }
-        }
+		private void UndoBtn_OnClick(object sender, RoutedEventArgs e) {
+			if (RichTextBox.CanUndo) 
+			{
+				RichTextBox.Undo();
+			}
+		}
 
-        private void RedoBtn_OnClick(object sender, RoutedEventArgs e) {
-	        if (RtbEditor.CanRedo) {
-		        RtbEditor.Redo();
-	        }
-        }
-    }
+		private void RedoBtn_OnClick(object sender, RoutedEventArgs e) {
+			if (RichTextBox.CanRedo) 
+			{
+				RichTextBox.Redo();
+			}
+		}
+	}
 }
