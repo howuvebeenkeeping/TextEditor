@@ -6,36 +6,27 @@ using Microsoft.Win32;
 
 namespace TextEditor
 {
-    internal class DataStorage 
+    internal static class DataStorage 
     {
         private static readonly string DocumentFilter = "Rich Text Format (*.rtf)|*.rtf|All files (*.*)|*.*";
-        private readonly RichTextBox _richTextBox;
-        private TextRange TextRange =>
-            new TextRange(_richTextBox.Document.ContentStart, _richTextBox.Document.ContentEnd);
 
-        public DataStorage(RichTextBox richTextBox)
-        {
-            _richTextBox = richTextBox;
-        }
-
-        public void Save() 
+        public static void Save(TextRange textRange) 
         {
             var saveDialog = new SaveFileDialog {Filter = DocumentFilter};
 
             if (saveDialog.ShowDialog() == true)
             {
-                TextRange.Save(new FileStream(saveDialog.FileName, FileMode.Create), DataFormats.Rtf);
+                textRange.Save(new FileStream(saveDialog.FileName, FileMode.Create), DataFormats.Rtf);
             }
         }
 
-        public void Open() 
+        public static FileStream Open() 
         {
             var openDialog = new OpenFileDialog {Filter = DocumentFilter};
 			
-            if (openDialog.ShowDialog() == true)
-            {
-                TextRange.Load(new FileStream(openDialog.FileName, FileMode.Open), DataFormats.Rtf);
-            }
+            return openDialog.ShowDialog() == true 
+                ? new FileStream(openDialog.FileName, FileMode.Open) 
+                : null;
         }
     }
 }

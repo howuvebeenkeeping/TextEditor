@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,14 +14,12 @@ namespace TextEditor
     public partial class MainWindow : Window 
 	{
 		private readonly TextFormatter _textFormatter;
-		private readonly DataStorage _dataStorage;
-		
-        public MainWindow() 
+
+		public MainWindow() 
 		{
             InitializeComponent();
 			
 			_textFormatter = new TextFormatter(RichTextBox);
-			_dataStorage = new DataStorage(RichTextBox);
             CmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
 			CmbFontSize.ItemsSource = new List<double> { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 
@@ -78,9 +77,9 @@ namespace TextEditor
 						colorBrush.Color.B);
 				}
 
-				// font family check
+				// check font family 
 				CmbFontFamily.SelectedItem = _textFormatter.FontFamily ?? CmbFontFamily.SelectedItem;
-				// font size check
+				// check font size 
 				CmbFontSize.Text = _textFormatter.FontSize?.ToString() ?? CmbFontSize.Text;
 				
 				// undo/redo button activation
@@ -95,14 +94,15 @@ namespace TextEditor
 			RichTextBox.Focus();
 		}
 
-		private void Open_Executed(object sender, ExecutedRoutedEventArgs e) 
+		private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
-			_dataStorage.Open();
+			FileStream fileStream = DataStorage.Open();
+			_textFormatter.TextRange.Load(fileStream, DataFormats.Rtf);
 		}
 
 		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) 
 		{
-			_dataStorage.Save();
+			DataStorage.Save(_textFormatter.TextRange);
 		}
 
 		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -132,14 +132,16 @@ namespace TextEditor
 			}
 		}
 
-		private void UndoBtn_OnClick(object sender, RoutedEventArgs e) {
+		private void UndoBtn_OnClick(object sender, RoutedEventArgs e) 
+		{
 			if (RichTextBox.CanUndo) 
 			{
 				RichTextBox.Undo();
 			}
 		}
 
-		private void RedoBtn_OnClick(object sender, RoutedEventArgs e) {
+		private void RedoBtn_OnClick(object sender, RoutedEventArgs e)
+		{
 			if (RichTextBox.CanRedo) 
 			{
 				RichTextBox.Redo();
