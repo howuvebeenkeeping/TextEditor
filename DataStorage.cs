@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using Microsoft.Win32;
 
