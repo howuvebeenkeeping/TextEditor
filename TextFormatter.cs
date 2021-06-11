@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -6,30 +7,52 @@ using System.Windows.Media;
 
 namespace TextEditor 
 {
-    internal class TextFormatter 
+    internal static class TextFormatter
     {
-        private readonly RichTextBox _richTextBox;
-        public TextRange TextRange => new TextRange(_richTextBox.Selection.Start, _richTextBox.Selection.End);
-        public object FontWeight => TextRange.GetPropertyValue(TextElement.FontWeightProperty);
-        public object FontStyle => TextRange.GetPropertyValue(TextElement.FontStyleProperty);
-        public object FontColor
+        public static RichTextBox RichTextBox;
+        public static TextRange TextRange => new TextRange(RichTextBox.Selection.Start, RichTextBox.Selection.End);
+        private static object FontWeight => TextRange.GetPropertyValue(TextElement.FontWeightProperty);
+        private static object FontStyle => TextRange.GetPropertyValue(TextElement.FontStyleProperty);
+        public static object FontColor
         {
             get => TextRange.GetPropertyValue(TextElement.ForegroundProperty);
-            set => TextRange.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush((Color)value));
+            set => TextRange.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush((Color) value));
         }
-        public object FontSize
-        { 
+        public static object FontSize
+        {
             get => TextRange.GetPropertyValue(TextElement.FontSizeProperty);
             set => TextRange.ApplyPropertyValue(TextElement.FontSizeProperty, value);
         }
-        public object FontFamily
-        { 
+        public static object FontFamily
+        {
             get => TextRange.GetPropertyValue(TextElement.FontFamilyProperty);
             set => TextRange.ApplyPropertyValue(TextElement.FontFamilyProperty, value);
         }
-        public TextFormatter(RichTextBox richTextBox) 
+        public static bool IsItalicEnabled => FontStyle != DependencyProperty.UnsetValue && FontStyle.Equals(FontStyles.Italic);
+        public static bool IsBoldEnabled => FontWeight != DependencyProperty.UnsetValue && FontWeight.Equals(FontWeights.Bold);
+        public static bool IsUnderlineEnabled
         {
-            _richTextBox = richTextBox;
+            get
+            {
+                TextPointer caret = RichTextBox.CaretPosition;
+                var paragraph = RichTextBox.Document.Blocks.FirstOrDefault(x =>
+                    x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) as Paragraph;
+
+                if (paragraph?.Inlines.FirstOrDefault(x =>
+                    x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) is Inline inline)
+                {
+                    TextDecorationCollection decorations = inline.TextDecorations;
+                    return decorations != DependencyProperty.UnsetValue && decorations != null &&
+                           decorations.Contains(TextDecorations.Underline[0]);
+                }
+
+                return false;
+            }
+        }
+
+        public static void Clear()
+        {
+            RichTextBox.Document.Blocks.Clear();
         }
     }
 }
