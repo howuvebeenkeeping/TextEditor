@@ -10,7 +10,7 @@ namespace TextEditor
     internal static class TextFormatter
     {
         public static RichTextBox RichTextBox;
-        private static TextRange TextRange => new TextRange(RichTextBox.Selection.Start, RichTextBox.Selection.End);
+        public static TextRange TextRange => new TextRange(RichTextBox.Selection.Start, RichTextBox.Selection.End);
         public static TextRange DocumentRange => new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
         private static object FontWeight => TextRange.GetPropertyValue(TextElement.FontWeightProperty);
         private static object FontStyle => TextRange.GetPropertyValue(TextElement.FontStyleProperty);

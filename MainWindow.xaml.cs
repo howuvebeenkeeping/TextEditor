@@ -48,9 +48,11 @@ namespace TextEditor
 
 				// check font family 
 				CmbFontFamily.SelectedItem = TextFormatter.FontFamily ?? CmbFontFamily.SelectedItem;
+				TextFormatter.FontFamily = CmbFontFamily.SelectedItem;
 				// check font size 
 				CmbFontSize.Text = TextFormatter.FontSize?.ToString() ?? CmbFontSize.Text;
-				
+				TextFormatter.FontSize = CmbFontSize.Text;
+
 				// undo/redo button activation
 				UndoBtn.IsEnabled = RichTextBox.CanUndo;
 				RedoBtn.IsEnabled = RichTextBox.CanRedo;
@@ -71,11 +73,11 @@ namespace TextEditor
 			TextFormatter.ClearDocument();
 			using (var fileStream = new FileStream(DataStorage.Open(), FileMode.Open))
 			{
-				TextFormatter.DocumentRange.Load(fileStream, DataFormats.Rtf);
+				TextFormatter.TextRange.Load(fileStream, DataFormats.Rtf);
 			}
 			Title = DataStorage.FileName;
 			TextFormatter.ClearUndoStack();
-			SaveBtn.IsEnabled = false;
+			SaveBtn.IsEnabled = UndoBtn.IsEnabled = RedoBtn.IsEnabled = false;
 		}
 
 		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) 
@@ -83,7 +85,7 @@ namespace TextEditor
 			DataStorage.Save(TextFormatter.DocumentRange);
 			Title = DataStorage.FileName;
 			TextFormatter.ClearUndoStack();
-			SaveBtn.IsEnabled = false;
+			SaveBtn.IsEnabled = UndoBtn.IsEnabled = RedoBtn.IsEnabled = false;
 		}
 
 		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
