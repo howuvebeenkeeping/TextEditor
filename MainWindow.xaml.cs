@@ -75,14 +75,17 @@ namespace TextEditor
 			{
 				TextFormatter.TextRange.Load(fileStream, DataFormats.Rtf);
 			}
-			Title = DataStorage.FileName;
-			TextFormatter.ClearUndoStack();
-			SaveBtn.IsEnabled = UndoBtn.IsEnabled = RedoBtn.IsEnabled = false;
+			SetEditingDefaults();
 		}
 
 		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) 
 		{
 			DataStorage.Save(TextFormatter.DocumentRange);
+			SetEditingDefaults();
+		}
+
+		private void SetEditingDefaults()
+		{
 			Title = DataStorage.FileName;
 			TextFormatter.ClearUndoStack();
 			SaveBtn.IsEnabled = UndoBtn.IsEnabled = RedoBtn.IsEnabled = false;
