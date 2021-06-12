@@ -10,7 +10,8 @@ namespace TextEditor
     internal static class TextFormatter
     {
         public static RichTextBox RichTextBox;
-        public static TextRange TextRange => new TextRange(RichTextBox.Selection.Start, RichTextBox.Selection.End);
+        private static TextRange TextRange => new TextRange(RichTextBox.Selection.Start, RichTextBox.Selection.End);
+        public static TextRange DocumentRange => new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
         private static object FontWeight => TextRange.GetPropertyValue(TextElement.FontWeightProperty);
         private static object FontStyle => TextRange.GetPropertyValue(TextElement.FontStyleProperty);
         public static object FontColor
@@ -50,9 +51,15 @@ namespace TextEditor
             }
         }
 
-        public static void Clear()
+        public static void ClearDocument()
         {
             RichTextBox.Document.Blocks.Clear();
+        }
+        
+        public static void ClearUndoStack()
+        {
+            RichTextBox.IsUndoEnabled = false;
+            RichTextBox.IsUndoEnabled = true;
         }
     }
 }

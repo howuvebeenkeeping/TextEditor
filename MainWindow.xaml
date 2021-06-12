@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="TextEditor" Height="600" Width="800"
+        Height="600" Width="800"
         WindowStartupLocation="CenterScreen">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" Executed="Open_Executed" />
@@ -13,14 +13,14 @@
     </Window.CommandBindings>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
-            <Button Command="ApplicationCommands.Open">
+            <Button x:Name="OpenBtn" Command="ApplicationCommands.Open">
                 <Image Source="pack://application:,,,/Assets/folder.png" Width="30" Height="30" />
             </Button>
-            <Button Command="ApplicationCommands.Save">
+            <Button x:Name="SaveBtn" Command="ApplicationCommands.Save" IsEnabled="False">
                 <Image Source="pack://application:,,,/Assets/disk.png" Width="25" Height="25" />
             </Button>
-            <Button x:Name="UndoBtn" Click="UndoBtn_OnClick" IsEnabled="False" Content="Undo"/>
-            <Button x:Name="RedoBtn" Click="RedoBtn_OnClick" IsEnabled="False" Content="Redo"/>
+            <Button x:Name="UndoBtn" Click="UndoBtn_OnClick"  Content="Undo"/>
+            <Button x:Name="RedoBtn" Click="RedoBtn_OnClick"  Content="Redo"/>
             <Separator />
             <ToggleButton Command="EditingCommands.ToggleBold" x:Name="BtnBold">
                 <Image Source="pack://application:,,,/Assets/text_bold.png" Width="25" Height="24" />

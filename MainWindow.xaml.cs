@@ -54,6 +54,9 @@ namespace TextEditor
 				// undo/redo button activation
 				UndoBtn.IsEnabled = RichTextBox.CanUndo;
 				RedoBtn.IsEnabled = RichTextBox.CanRedo;
+				SaveBtn.IsEnabled = RichTextBox.CanUndo;
+				
+				Title = DataStorage.FileName + (RichTextBox.CanUndo ? " [unsaved]" : "");
 			} 
 			catch (Exception ex) 
 			{
@@ -65,16 +68,22 @@ namespace TextEditor
 
 		private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
-			TextFormatter.Clear();
-			using (FileStream fileStream = DataStorage.Open())
+			TextFormatter.ClearDocument();
+			using (var fileStream = new FileStream(DataStorage.Open(), FileMode.Open))
 			{
-				TextFormatter.TextRange.Load(fileStream, DataFormats.Rtf);
+				TextFormatter.DocumentRange.Load(fileStream, DataFormats.Rtf);
 			}
+			Title = DataStorage.FileName;
+			TextFormatter.ClearUndoStack();
+			SaveBtn.IsEnabled = false;
 		}
 
 		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) 
 		{
-			DataStorage.Save(TextFormatter.TextRange);
+			DataStorage.Save(TextFormatter.DocumentRange);
+			Title = DataStorage.FileName;
+			TextFormatter.ClearUndoStack();
+			SaveBtn.IsEnabled = false;
 		}
 
 		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
