@@ -18,10 +18,9 @@ namespace TextEditor
             InitializeComponent();
 			
 			TextFormatter.RichTextBox = RichTextBox;
+			// setting editor defaults
             CmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
 			CmbFontSize.ItemsSource = new List<double> { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
-
-			// setting defaults
 			RichTextBox.FontFamily = new FontFamily("Times New Roman");
 			RichTextBox.FontSize = 20;
 			ColorPicker.SelectedColor = Colors.Black;
@@ -71,16 +70,32 @@ namespace TextEditor
 		private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
 			TextFormatter.ClearDocument();
-			using (var fileStream = new FileStream(DataStorage.Open(), FileMode.Open))
+			try
 			{
-				TextFormatter.TextRange.Load(fileStream, DataFormats.Rtf);
+				using (var fileStream = new FileStream(DataStorage.Open(), FileMode.Open))
+				{
+					TextFormatter.TextRange.Load(fileStream, DataFormats.Rtf);
+				}
 			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+
 			SetEditingDefaults();
 		}
 
 		private void Save_Executed(object sender, ExecutedRoutedEventArgs e) 
 		{
-			DataStorage.Save(TextFormatter.DocumentRange);
+			try
+			{
+				DataStorage.Save(TextFormatter.DocumentRange);
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+
 			SetEditingDefaults();
 		}
 
