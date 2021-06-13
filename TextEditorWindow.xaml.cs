@@ -33,12 +33,12 @@ namespace TextEditor
 		{
 			try 
 			{
-				// check toggle buttons
+				// update toggle buttons
 				BoldBtn.IsChecked = _textFormatter.IsBold;
 				ItalicBtn.IsChecked = _textFormatter.IsItalic;
 				UnderlineBtn.IsChecked = _textFormatter.IsUnderline;
 
-				// check color pick
+				// update color picker
 				if (_textFormatter.FontColor is SolidColorBrush colorBrush) 
 				{
 					ColorPicker.SelectedColor = Color.FromArgb(
@@ -48,19 +48,20 @@ namespace TextEditor
 						colorBrush.Color.B);
 				}
 
-				// check font family 
+				// update font family 
 				FontFamilyCmb.SelectedItem = _textFormatter.FontFamily ?? FontFamilyCmb.SelectedItem;
 				_textFormatter.FontFamily = FontFamilyCmb.SelectedItem;
 				
-				// check font size 
+				// update font size 
 				FontSizeCmb.Text = _textFormatter.FontSize?.ToString() ?? FontSizeCmb.Text;
 				_textFormatter.FontSize = FontSizeCmb.Text;
 
-				// undo/redo button activation
+				// update undo/redo buttons
 				UndoBtn.IsEnabled = RichTextBox.CanUndo;
 				SaveBtn.IsEnabled = RichTextBox.CanUndo;
 				RedoBtn.IsEnabled = RichTextBox.CanRedo;
 				
+				// update title
 				Title = _dataStorage.DocumentName + (RichTextBox.CanUndo ? " [unsaved]" : "");
 			} 
 			catch (Exception ex) 
