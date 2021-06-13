@@ -14,6 +14,7 @@ namespace TextEditor
     {
 	    private readonly TextFormatter _textFormatter;
 	    private readonly DataStorage _dataStorage;
+	    
 		public TextEditorWindow() 
 		{
 			InitializeComponent();
