@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -7,36 +6,46 @@ using System.Windows.Media;
 
 namespace TextEditor 
 {
-    internal static class TextFormatter
+    internal class TextFormatter
     {
-        public static RichTextBox RichTextBox;
-        public static TextRange TextRange => new TextRange(RichTextBox.Selection.Start, RichTextBox.Selection.End);
-        public static TextRange DocumentRange => new TextRange(RichTextBox.Document.ContentStart, RichTextBox.Document.ContentEnd);
-        private static object FontWeight => TextRange.GetPropertyValue(TextElement.FontWeightProperty);
-        private static object FontStyle => TextRange.GetPropertyValue(TextElement.FontStyleProperty);
-        public static object FontColor
+        private readonly RichTextBox _richTextBox;
+
+        private TextRange SelectionRange => new TextRange(_richTextBox.Selection.Start, _richTextBox.Selection.End);
+
+        public TextRange DocumentRange => new TextRange(_richTextBox.Document.ContentStart, _richTextBox.Document.ContentEnd);
+
+        private object FontWeight => SelectionRange.GetPropertyValue(TextElement.FontWeightProperty);
+
+        private object FontStyle => SelectionRange.GetPropertyValue(TextElement.FontStyleProperty);
+
+        public object FontColor
         {
-            get => TextRange.GetPropertyValue(TextElement.ForegroundProperty);
-            set => TextRange.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush((Color) value));
+            get => SelectionRange.GetPropertyValue(TextElement.ForegroundProperty);
+            set => SelectionRange.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush((Color) value));
         }
-        public static object FontSize
+
+        public object FontSize
         {
-            get => TextRange.GetPropertyValue(TextElement.FontSizeProperty);
-            set => TextRange.ApplyPropertyValue(TextElement.FontSizeProperty, value);
+            get => SelectionRange.GetPropertyValue(TextElement.FontSizeProperty);
+            set => SelectionRange.ApplyPropertyValue(TextElement.FontSizeProperty, value);
         }
-        public static object FontFamily
+
+        public object FontFamily
         {
-            get => TextRange.GetPropertyValue(TextElement.FontFamilyProperty);
-            set => TextRange.ApplyPropertyValue(TextElement.FontFamilyProperty, value);
+            get => SelectionRange.GetPropertyValue(TextElement.FontFamilyProperty);
+            set => SelectionRange.ApplyPropertyValue(TextElement.FontFamilyProperty, value);
         }
-        public static bool IsItalicEnabled => FontStyle != DependencyProperty.UnsetValue && FontStyle.Equals(FontStyles.Italic);
-        public static bool IsBoldEnabled => FontWeight != DependencyProperty.UnsetValue && FontWeight.Equals(FontWeights.Bold);
-        public static bool IsUnderlineEnabled
+
+        public bool IsItalic => FontStyle != DependencyProperty.UnsetValue && FontStyle.Equals(FontStyles.Italic);
+
+        public bool IsBold => FontWeight != DependencyProperty.UnsetValue && FontWeight.Equals(FontWeights.Bold);
+
+        public bool IsUnderline
         {
             get
             {
-                TextPointer caret = RichTextBox.CaretPosition;
-                var paragraph = RichTextBox.Document.Blocks.FirstOrDefault(x =>
+                TextPointer caret = _richTextBox.CaretPosition;
+                var paragraph = _richTextBox.Document.Blocks.FirstOrDefault(x =>
                     x.ContentStart.CompareTo(caret) == -1 && x.ContentEnd.CompareTo(caret) == 1) as Paragraph;
 
                 if (paragraph?.Inlines.FirstOrDefault(x =>
@@ -51,15 +60,20 @@ namespace TextEditor
             }
         }
 
-        public static void ClearDocument()
+        public TextFormatter(RichTextBox richTextBox)
         {
-            RichTextBox.Document.Blocks.Clear();
+            _richTextBox = richTextBox;
+        }
+
+        public void ClearDocument()
+        {
+            _richTextBox.Document.Blocks.Clear();
         }
         
-        public static void ClearUndoStack()
+        public void ClearUndoStack()
         {
-            RichTextBox.IsUndoEnabled = false;
-            RichTextBox.IsUndoEnabled = true;
+            _richTextBox.IsUndoEnabled = false;
+            _richTextBox.IsUndoEnabled = true;
         }
     }
 }

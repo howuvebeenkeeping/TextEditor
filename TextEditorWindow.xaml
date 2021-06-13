@@ -1,4 +1,4 @@
-﻿<Window x:Class="TextEditor.MainWindow"
+﻿<Window x:Class="TextEditor.TextEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -19,24 +19,28 @@
             <Button x:Name="SaveBtn" Command="ApplicationCommands.Save" IsEnabled="False">
                 <Image Source="pack://application:,,,/Assets/disk.png" Width="25" Height="25" />
             </Button>
-            <Button x:Name="UndoBtn" Click="UndoBtn_OnClick"  Content="Undo"/>
-            <Button x:Name="RedoBtn" Click="RedoBtn_OnClick"  Content="Redo"/>
+            <Button x:Name="UndoBtn" Click="UndoBtn_OnClick" IsEnabled="false">
+                <Image Source="pack://application:,,,/Assets/icons8-up-left-24.png" Width="20" Height="20" />
+            </Button>
+            <Button x:Name="RedoBtn" Click="RedoBtn_OnClick" IsEnabled="false">
+                <Image Source="pack://application:,,,/Assets/icons8-up-right-24.png" Width="20" Height="20" />
+            </Button>
             <Separator />
-            <ToggleButton Command="EditingCommands.ToggleBold" x:Name="BtnBold">
+            <ToggleButton Command="EditingCommands.ToggleBold" x:Name="BoldBtn">
                 <Image Source="pack://application:,,,/Assets/text_bold.png" Width="25" Height="24" />
             </ToggleButton>
-            <ToggleButton Command="EditingCommands.ToggleItalic" x:Name="BtnItalic">
+            <ToggleButton Command="EditingCommands.ToggleItalic" x:Name="ItalicBtn">
                 <Image Source="pack://application:,,,/Assets/text_italic.png" Width="25" Height="19" />
             </ToggleButton>
-            <ToggleButton Command="EditingCommands.ToggleUnderline" x:Name="BtnUnderline">
+            <ToggleButton Command="EditingCommands.ToggleUnderline" x:Name="UnderlineBtn">
                 <Image Source="pack://application:,,,/Assets/text_underline.png" Width="25" Height="24" />
             </ToggleButton>
             <Separator />
-            <ComboBox x:Name="CmbFontFamily" Width="150" SelectionChanged="CmbFontFamily_SelectionChanged"/>
-            <ComboBox x:Name="CmbFontSize" Width="50" SelectionChanged="CmbFontSize_OnSelectionChanged"/>
-            <xctk:ColorPicker Width="50" Height="25" Name="ColorPicker" SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
-           
-        </ToolBar>
+            <ComboBox x:Name="FontFamilyCmb" Width="150" SelectionChanged="CmbFontFamily_SelectionChanged"/>
+            <ComboBox x:Name="FontSizeCmb" Width="50" SelectionChanged="CmbFontSize_OnSelectionChanged"/>
+            <xctk:ColorPicker Width="50" Height="25" Name="ColorPicker" 
+                              SelectedColorChanged="ColorPicker_SelectedColorChanged"/>
+           </ToolBar>
         <RichTextBox x:Name="RichTextBox" SelectionChanged="RichTextBox_SelectionChanged"/>
     </DockPanel>
 </Window>

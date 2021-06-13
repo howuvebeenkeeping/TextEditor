@@ -1,38 +1,40 @@
 ﻿using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using Microsoft.Win32;
 
 namespace TextEditor
 {
-    internal static class DataStorage 
+    internal class DataStorage 
     {
         private static readonly string DocumentFilter = "Rich Text Format (*.rtf)|*.rtf|All files (*.*)|*.*";
-        public static bool IsDocumentSaved { get; set; }
-        private static bool IsDocumentOpened { get; set; }
-        public static string FileName { get; private set; }
+        private bool IsDocumentOpened { get; set; }
+        public string DocumentName { get; private set; }
+        private static DataStorage _dataStorage;
 
-        public static void Save(TextRange documentRange)
+        public static DataStorage GetInstance()
+        {
+            return _dataStorage ?? (_dataStorage = new DataStorage());
+        }
+
+        public void SaveDocument(TextRange documentRange)
         {
             if (!IsDocumentOpened)
             {
                 var saveDialog = new SaveFileDialog {Filter = DocumentFilter};
                 saveDialog.ShowDialog();
-                FileName = saveDialog.FileName;
+                DocumentName = saveDialog.FileName;
                 IsDocumentOpened = true;
             }
-            documentRange.Save(new FileStream(FileName, FileMode.Create), DataFormats.Rtf);
-            IsDocumentSaved = true;
+            documentRange.Save(new FileStream(DocumentName, FileMode.Create), DataFormats.Rtf);
         }
 
-        public static string Open() 
+        public string OpenDocument() 
         {
             var openDialog = new OpenFileDialog {Filter = DocumentFilter};
             openDialog.ShowDialog();
             IsDocumentOpened = true;
-            IsDocumentSaved = true;
-            return FileName = openDialog.FileName;
+            return DocumentName = openDialog.FileName;
         }
     }
 }

@@ -8,10 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("assets/disk.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("assets/folder.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("assets/text_bold.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("assets/text_italic.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("assets/text_underline.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("assets/icons8-up-left-24.png")]
 
 

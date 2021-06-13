@@ -72,7 +72,7 @@
     </ApplicationDefinition>
     <Compile Include="DataStorage.cs" />
     <Compile Include="TextFormatter.cs" />
-    <Page Include="MainWindow.xaml">
+    <Page Include="TextEditorWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -80,8 +80,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="TextEditorWindow.xaml.cs">
+      <DependentUpon>TextEditorWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -118,6 +118,10 @@
     <Resource Include="Assets\text_bold.png" />
     <Resource Include="Assets\text_italic.png" />
     <Resource Include="Assets\text_underline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="assets\icons8-up-left-24.png" />
+    <Resource Include="assets\icons8-up-right-24.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

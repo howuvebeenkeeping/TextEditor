@@ -5,22 +5,24 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace TextEditor
 {
-    public partial class MainWindow : Window 
-	{
-		public MainWindow() 
+    public partial class TextEditorWindow : Window
+    {
+	    private readonly TextFormatter _textFormatter;
+	    private readonly DataStorage _dataStorage;
+		public TextEditorWindow() 
 		{
-            InitializeComponent();
-			
-			TextFormatter.RichTextBox = RichTextBox;
+			InitializeComponent();
+            _textFormatter = new TextFormatter(RichTextBox);
+            _dataStorage = DataStorage.GetInstance();
+            
 			// setting editor defaults
-            CmbFontFamily.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
-			CmbFontSize.ItemsSource = new List<double> { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
+            FontFamilyCmb.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
+			FontSizeCmb.ItemsSource = new List<double> { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 			RichTextBox.FontFamily = new FontFamily("Times New Roman");
 			RichTextBox.FontSize = 20;
 			ColorPicker.SelectedColor = Colors.Black;
@@ -31,12 +33,12 @@ namespace TextEditor
 			try 
 			{
 				// check toggle buttons
-				BtnBold.IsChecked = TextFormatter.IsBoldEnabled;
-				BtnItalic.IsChecked = TextFormatter.IsItalicEnabled;
-				BtnUnderline.IsChecked = TextFormatter.IsUnderlineEnabled;
+				BoldBtn.IsChecked = _textFormatter.IsBold;
+				ItalicBtn.IsChecked = _textFormatter.IsItalic;
+				UnderlineBtn.IsChecked = _textFormatter.IsUnderline;
 
 				// check color pick
-				if (TextFormatter.FontColor is SolidColorBrush colorBrush) 
+				if (_textFormatter.FontColor is SolidColorBrush colorBrush) 
 				{
 					ColorPicker.SelectedColor = Color.FromArgb(
 						colorBrush.Color.A,
@@ -46,18 +48,19 @@ namespace TextEditor
 				}
 
 				// check font family 
-				CmbFontFamily.SelectedItem = TextFormatter.FontFamily ?? CmbFontFamily.SelectedItem;
-				TextFormatter.FontFamily = CmbFontFamily.SelectedItem;
+				FontFamilyCmb.SelectedItem = _textFormatter.FontFamily ?? FontFamilyCmb.SelectedItem;
+				_textFormatter.FontFamily = FontFamilyCmb.SelectedItem;
+				
 				// check font size 
-				CmbFontSize.Text = TextFormatter.FontSize?.ToString() ?? CmbFontSize.Text;
-				TextFormatter.FontSize = CmbFontSize.Text;
+				FontSizeCmb.Text = _textFormatter.FontSize?.ToString() ?? FontSizeCmb.Text;
+				_textFormatter.FontSize = FontSizeCmb.Text;
 
 				// undo/redo button activation
 				UndoBtn.IsEnabled = RichTextBox.CanUndo;
-				RedoBtn.IsEnabled = RichTextBox.CanRedo;
 				SaveBtn.IsEnabled = RichTextBox.CanUndo;
+				RedoBtn.IsEnabled = RichTextBox.CanRedo;
 				
-				Title = DataStorage.FileName + (RichTextBox.CanUndo ? " [unsaved]" : "");
+				Title = _dataStorage.DocumentName + (RichTextBox.CanUndo ? " [unsaved]" : "");
 			} 
 			catch (Exception ex) 
 			{
@@ -69,12 +72,12 @@ namespace TextEditor
 
 		private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
 		{
-			TextFormatter.ClearDocument();
+			_textFormatter.ClearDocument();
 			try
 			{
-				using (var fileStream = new FileStream(DataStorage.Open(), FileMode.Open))
+				using (var fileStream = new FileStream(_dataStorage.OpenDocument(), FileMode.Open))
 				{
-					TextFormatter.TextRange.Load(fileStream, DataFormats.Rtf);
+					_textFormatter.DocumentRange.Load(fileStream, DataFormats.Rtf);
 				}
 			}
 			catch (Exception ex)
@@ -89,7 +92,7 @@ namespace TextEditor
 		{
 			try
 			{
-				DataStorage.Save(TextFormatter.DocumentRange);
+				_dataStorage.SaveDocument(_textFormatter.DocumentRange);
 			}
 			catch (Exception ex)
 			{
@@ -101,29 +104,29 @@ namespace TextEditor
 
 		private void SetEditingDefaults()
 		{
-			Title = DataStorage.FileName;
-			TextFormatter.ClearUndoStack();
+			Title = _dataStorage.DocumentName;
+			_textFormatter.ClearUndoStack();
 			SaveBtn.IsEnabled = UndoBtn.IsEnabled = RedoBtn.IsEnabled = false;
 		}
 
 		private void CmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (CmbFontFamily.SelectedItem == null) return;
-			TextFormatter.FontFamily = CmbFontFamily.SelectedValue;
+			if (FontFamilyCmb.SelectedItem == null) return;
+			_textFormatter.FontFamily = FontFamilyCmb.SelectedValue;
 			RichTextBox.Focus();
 		}
 
 		private void ColorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
 		{
-			if (TextFormatter.FontColor == null || ColorPicker.SelectedColor == null) return;
-			TextFormatter.FontColor = ColorPicker.SelectedColor;
+			if (_textFormatter.FontColor == null || ColorPicker.SelectedColor == null) return;
+			_textFormatter.FontColor = ColorPicker.SelectedColor;
 			RichTextBox.Focus();
 		}
 
 		private void CmbFontSize_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (TextFormatter.FontSize == null || CmbFontSize.SelectedItem == null) return;
-			TextFormatter.FontSize = CmbFontSize.SelectedItem;
+			if (_textFormatter.FontSize == null || FontSizeCmb.SelectedItem == null) return;
+			_textFormatter.FontSize = FontSizeCmb.SelectedItem;
 			RichTextBox.Focus();
 		}
 
