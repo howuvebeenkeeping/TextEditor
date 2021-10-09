@@ -18,7 +18,6 @@ C:\Users\Rustamka\source\repos\TextEditor\bin\Debug\ro\Xceed.Wpf.AvalonDock.reso
 C:\Users\Rustamka\source\repos\TextEditor\bin\Debug\ru\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\Rustamka\source\repos\TextEditor\bin\Debug\sv\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\Rustamka\source\repos\TextEditor\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
-C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.csprojAssemblyReference.cache
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditorWindow.baml
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditorWindow.g.cs
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\App.g.cs
@@ -27,6 +26,7 @@ C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.g.resources
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.Properties.Resources.resources
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.csproj.GenerateResource.cache
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.csproj.CoreCompileInputs.cache
-C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.csproj.CopyComplete
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.exe
 C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.pdb
+C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.csproj.AssemblyReference.cache
+C:\Users\Rustamka\source\repos\TextEditor\obj\Debug\TextEditor.csproj.SuggestedBindingRedirects.cache

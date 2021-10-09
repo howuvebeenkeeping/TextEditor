@@ -10,6 +10,11 @@ namespace TextEditor
     {
         private readonly RichTextBox _richTextBox;
 
+        public TextFormatter(RichTextBox richTextBox)
+        {
+            _richTextBox = richTextBox;
+        }
+
         private TextRange SelectionRange => new TextRange(_richTextBox.Selection.Start, _richTextBox.Selection.End);
 
         public TextRange DocumentRange => new TextRange(_richTextBox.Document.ContentStart, _richTextBox.Document.ContentEnd);
@@ -58,11 +63,6 @@ namespace TextEditor
 
                 return false;
             }
-        }
-
-        public TextFormatter(RichTextBox richTextBox)
-        {
-            _richTextBox = richTextBox;
         }
 
         public void ClearDocument()

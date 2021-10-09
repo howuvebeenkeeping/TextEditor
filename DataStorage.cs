@@ -7,15 +7,16 @@ namespace TextEditor
 {
     internal class DataStorage 
     {
-        private static readonly string DocumentFilter = "Rich Text Format (*.rtf)|*.rtf|All files (*.*)|*.*";
         private bool _isDocumentOpened;
-        public string DocumentName { get; private set; }
+        private static readonly string DocumentFilter = "Rich Text Format (*.rtf)|*.rtf|All files (*.*)|*.*";
         private static DataStorage _dataStorage;
 
         public static DataStorage GetInstance()
         {
             return _dataStorage ?? (_dataStorage = new DataStorage());
         }
+
+        public string DocumentName { get; private set; }
 
         public void SaveDocument(TextRange documentRange)
         {
@@ -29,7 +30,7 @@ namespace TextEditor
             documentRange.Save(new FileStream(DocumentName, FileMode.Create), DataFormats.Rtf);
         }
 
-        public string OpenDocument() 
+        public string OpenDocumentWithDialog() 
         {
             var openDialog = new OpenFileDialog {Filter = DocumentFilter};
             openDialog.ShowDialog();
